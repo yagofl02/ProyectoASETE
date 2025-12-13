@@ -32,14 +32,16 @@
         $director = $_SESSION["director"] ?? "";
     }
 
-    require_once "peliculas.php";
+    require_once "gestion_peliculas.php";
 
-    //Si no hay películas dentro de la sesión, las gaurdamos en ella
-    if(!isset($_SESSION["peliculas"])){
-        $_SESSION["peliculas"] = serialize($peliculas);
-    }
-    //Parece redundante, pero así cuando añdo una nueva película las tengo todas para mostrar
-    $peliculas = unserialize($_SESSION["peliculas"]);
+    $filtros = [
+    'genero'   => $genero,
+    'anio'     => $año,
+    'director' => $director
+];
+
+ // Obtenemos las películas filtradas desde la BD
+ $peliculas = cogerPeliculasBD($filtros);
 
 ?>
 <!DOCTYPE html>
