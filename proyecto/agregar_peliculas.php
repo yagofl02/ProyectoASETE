@@ -12,7 +12,7 @@
 
     //Nos aseguramos de que la lista de películas exista en sesión, y la deserializamos a lista de objetos
     if(!isset($_SESSION["peliculas"])){
-        $_SESSION["peliculas"] = unserialize($peliculas);
+        $_SESSION["peliculas"] ?? [];
     }
 
     $mensaje = "";

@@ -1,0 +1,28 @@
+version: "3.9"
+services: 
+  web:
+    build: .
+    ports: 
+      - "8080:80"
+    volumes:
+      - "C:/Users/asus5/OneDrive/Escritorio/pruebadocker:/var/www/html/"
+
+  bbdd:
+    image: mysql:5.7
+    environment: 
+      MYSQL_ROOT_PASSWORD: bbdd
+      MYSQL_DATABASE: bbdd
+    volumes:
+      - bbdd_data:/var/lib/mysql
+
+  bbdd_cliente:
+    image: phpmyadmin/phpmyadmin
+    ports: 
+      - "8081:80"
+    environment: 
+      PMA_HOST: bbdd
+      PMA_USER: root
+      PMA_PASSWORD: bbdd
+
+volumes: 
+  bbdd_data:

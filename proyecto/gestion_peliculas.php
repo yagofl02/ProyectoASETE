@@ -2,9 +2,10 @@
 require_once "conexion.php";
 require_once "models/pelicula.php";
 
-
 function cogerPeliculasBD($filtros = []) {
     global $conexion;
+
+    $conexion->set_charset("utf8mb4");
 
     $sql = "SELECT * FROM Peliculas WHERE 1=1";
     $params = [];
@@ -29,7 +30,7 @@ function cogerPeliculasBD($filtros = []) {
     }
 
     if (!empty($filtros['anio'])) {
-        $sql .= " AND Año_estreno = ?";
+        $sql .= " AND `Año_estreno` = ?";
         $params[] = (int)$filtros['anio'];
         $tipos .= "i";
     }
@@ -44,6 +45,8 @@ function cogerPeliculasBD($filtros = []) {
 
     $peliculas = [];
     while ($fila = $resultado->fetch_assoc()) {
+
+        $adaptacionId = $fila['Adaptacion_Id'] ?? null;
         switch (strtolower($fila['Tipo_adaptacion'])) {
             case 'serie':
                 $peliculas[] = new Serie(
@@ -52,7 +55,7 @@ function cogerPeliculasBD($filtros = []) {
                     $fila['Director'],
                     $fila['Actores'],
                     $fila['Genero'],
-                    $fila['Adaptacion_Id']
+                    $adaptacionId
                 );
                 break;
             case 'corto':
@@ -80,19 +83,5 @@ function cogerPeliculasBD($filtros = []) {
     $stmt->close();
     return $peliculas;
 }
+
 ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
