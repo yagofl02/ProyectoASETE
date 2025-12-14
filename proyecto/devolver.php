@@ -36,6 +36,6 @@
         $consulta->close();
     }
 
-    header("Location: mis_reservas.php");
+    header("Location: reservas.php");
     exit;
 ?>

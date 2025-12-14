@@ -70,7 +70,7 @@
         <?php include "caja-idiomas.html"; ?>
         <h1>Catálogo de Libros</h1>
         <a href="catalogo.php">Ver Películas</a>
-        <a href="mis_reservas.php" style="color: orange;">Mis Reservas</a>
+        <a href="reservas.php" style="color: orange;">Mis Reservas</a>
         <p><?= $traducciones["user"] ?>: <?php echo $_SESSION['usuario']; ?> | <a href="logout.php"><?= $traducciones["logout"] ?></p>
 
         <?php if(isset($_SESSION["mensaje_exito"])): ?>
