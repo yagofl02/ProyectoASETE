@@ -13,7 +13,7 @@
         public function __construct($id, $titulo, $autor, $anio, $genero, $editorial = "", $paginas = 0){
             $this->id = $id;
             $this->titulo = $titulo;
-            $this->autor = $autor;
+            $this->autor = $autor;  
             $this->anio = $anio;
             $this->genero = $genero;
             $this->editorial = $editorial;
@@ -21,7 +21,7 @@
         }
 
         public function mostrarLibro(){
-            return "<p>Título: $this->titulo</p>";
+            return "<p>Título: $this->titulo | Autor: $this->autor</p>";
         }
 
     }

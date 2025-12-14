@@ -1,35 +1,27 @@
 <?php
-
     session_start();
-
     require "internacionalizacion.php";
 
-    //Si no hay usuario logueado (el que sea, nos da igual con que sea uno), lo redirijo al login
     if(!isset($_SESSION["usuario"])){
         header("Location: login.php");
         exit;
     }
 
-    //Conectar a la base de datos para verificar disponibilidad
     require "conexion.php";
 
-    //Inicializamos los filtros
     $genero = "";
     $año = "";
     $autor = "";
-    //Capturar filtros enviados por GET
+    
     if ($_SERVER["REQUEST_METHOD"] == "GET") {
-        //Es el operador de fusión de null en PHP (desde la versión 7).
         $genero = $_GET["genero"] ?? "";
         $año = $_GET["año"] ?? "";
         $autor = $_GET["autor"] ?? "";
 
-        //Guardar en sesión para que persistan
         $_SESSION["genero_libro"] = $genero;
         $_SESSION["año_libro"] = $año;
         $_SESSION["autor"] = $autor;
     } else {
-        //Si no hay GET, tomar los filtros almacenados en sesión
         $genero = $_SESSION["genero_libro"] ?? "";
         $año = $_SESSION["año_libro"] ?? "";
         $autor = $_SESSION["autor"] ?? "";
@@ -38,23 +30,21 @@
     require_once "gestion_libros.php";
 
     $filtros = [
-    'genero'   => $genero,
-    'anio'     => $año,
-    'autor'    => $autor
-];
+        'genero'   => $genero,
+        'anio'     => $año,
+        'autor'    => $autor
+    ];
 
- // Se obtiene de la base de datos
- $libros = cogerLibrosBD($filtros);
+    $libros = cogerLibrosBD($filtros);
 
- // Función para verificar si un libro está reservado
- function estaReservadoLibro($titulo, $conexion) {
-    $sql = "SELECT * FROM reservas WHERE titulo = ? AND tipo = 'libro' AND fecha_devolucion IS NULL";
-    $consulta = $conexion->prepare($sql);
-    $consulta->bind_param("s", $titulo);
-    $consulta->execute();
-    $resultado = $consulta->get_result();
-    return $resultado->num_rows > 0;
-}
+    function estaReservadoLibro($idLibro, $conexion) {
+        $sql = "SELECT * FROM Reservas WHERE idLibro = ? AND Fecha_devolucion IS NULL";
+        $consulta = $conexion->prepare($sql);
+        $consulta->bind_param("i", $idLibro);
+        $consulta->execute();
+        $resultado = $consulta->get_result();
+        return $resultado->num_rows > 0;
+    }
 
 ?>
 <!DOCTYPE html>
@@ -97,23 +87,36 @@
                 <th>Acción</th>
             </tr>
 
+            <?php $contador_libros = 0; ?>
             <?php foreach ($libros as $libro): ?>
-                <?php if(
-                         ($libro->anio == $año || $año == "") && 
-                         ($libro->genero == $genero || $genero == "") && 
-                         (stripos($libro->autor, $autor) != false || $autor == "")
-                        ): ?>
+                <?php 
+                $libroAño = $libro->anio ?? $libro->año ?? '';
+                $libroGenero = $libro->genero ?? '';
+                $libroAutor = $libro->autor ?? '';
+                
+                $cumpleFiltro = ($libroAño == $año || $año == "") && 
+                               ($libroGenero == $genero || $genero == "") && 
+                               (stripos($libroAutor, $autor) !== false || $autor == "");
+                
+                if($cumpleFiltro): 
+                ?>
                     
-                    <?php $reservado = estaReservadoLibro($libro->titulo, $conexion); ?>
+                    <?php 
+                    $idLibro = $libro->ID ?? $libro->id ?? null;
+                    $reservado = false;
+                    
+                    if ($idLibro !== null) {
+                        $reservado = estaReservadoLibro($idLibro, $conexion);
+                    }
+                    ?>
 
                     <tr>
-                        
-                        <td><?= $libro->titulo ?></td>
-                        <td><?= $libro->autor ?></td>
-                        <td><?= $libro->anio ?></td>
-                        <td><?= $libro->genero ?></td>
-                        <td><?= $libro->editorial ?></td>
-                        <td><?= $libro->paginas ?></td>
+                        <td><?= htmlspecialchars($libro->titulo ?? '') ?></td>
+                        <td><?= htmlspecialchars($libroAutor) ?></td>
+                        <td><?= htmlspecialchars($libroAño) ?></td>
+                        <td><?= htmlspecialchars($libroGenero) ?></td>
+                        <td><?= htmlspecialchars($libro->editorial ?? '') ?></td>
+                        <td><?= htmlspecialchars($libro->paginas ?? '') ?></td>
                         <td>
                             <?php if($reservado): ?>
                                 <span style="color: red; font-weight: bold;">No Disponible</span>
@@ -122,32 +125,32 @@
                             <?php endif; ?>
                         </td>
                         <td>
-                            <?php if(!$reservado): ?>
+                            <?php if(!$reservado && $idLibro): ?>
                                 <form method="post" action="reservar.php" style="display: inline;">
-                                    <input type="hidden" name="titulo" value="<?= $libro->titulo ?>">
+                                    <input type="hidden" name="id_producto" value="<?= $idLibro ?>">
                                     <input type="hidden" name="tipo" value="libro">
                                     <button type="submit" style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
                                         Reservar
                                     </button>
                                 </form>
-                            <?php else: ?>
+                            <?php elseif($reservado): ?>
                                 <span style="color: #999;">Reservado</span>
+                            <?php else: ?>
+                                <span style="color: #999;">No disponible</span>
                             <?php endif; ?>
                         </td>
                     </tr>
 
-                    <?php $contador_libros = ($contador_libros ?? 0) + 1; ?>
+                    <?php $contador_libros++; ?>
 
                 <?php endif; ?>
 
             <?php endforeach; ?>
 
-            <?php if(empty($contador_libros)): ?>
-
+            <?php if($contador_libros == 0): ?>
                 <tr>
                     <td colspan="8">No se ha encontrado ningún libro que coincida con la selección</td>
                 </tr>
-
             <?php endif; ?>
 
         </table>

@@ -9,18 +9,49 @@
     }
 
     $usuario = $_SESSION["usuario"];
-
-    // Obtiene las reservas activas
-    $sql = "SELECT * FROM reservas WHERE usuario = ? AND fecha_devolucion IS NULL ORDER BY fecha_reserva DESC";
-    $consulta = $conexion->prepare($sql);
+    
+   
+    $sql_cliente = "SELECT id FROM Usuarios WHERE usuario = ?";
+    $consulta = $conexion->prepare($sql_cliente);
     $consulta->bind_param("s", $usuario);
+    $consulta->execute();
+    $resultado_cliente = $consulta->get_result();
+    $cliente = $resultado_cliente->fetch_assoc();
+    $idCliente = $cliente['id'];
+
+    // reservas activas
+    $sql = "SELECT R.*, 
+                   L.Titulo as TituloLibro, 
+                   P.Titulo as TituloPelicula,
+                   CASE 
+                       WHEN R.idLibro IS NOT NULL THEN 'libro'
+                       ELSE 'pelicula'
+                   END as tipo
+            FROM Reservas R
+            LEFT JOIN Libros L ON R.idLibro = L.ID
+            LEFT JOIN Peliculas P ON R.idPelicula = P.ID
+            WHERE R.idCliente = ? AND R.Fecha_devolucion IS NULL 
+            ORDER BY R.Fecha_reserva DESC";
+    $consulta = $conexion->prepare($sql);
+    $consulta->bind_param("i", $idCliente);
     $consulta->execute();
     $reservas_activas = $consulta->get_result();
 
-    // Obtiene el historial de reservas
-    $sql = "SELECT * FROM reservas WHERE usuario = ? AND fecha_devolucion IS NOT NULL ORDER BY fecha_devolucion DESC";
+    // Historial
+    $sql = "SELECT R.*, 
+                   L.Titulo as TituloLibro, 
+                   P.Titulo as TituloPelicula,
+                   CASE 
+                       WHEN R.idLibro IS NOT NULL THEN 'libro'
+                       ELSE 'pelicula'
+                   END as tipo
+            FROM Reservas R
+            LEFT JOIN Libros L ON R.idLibro = L.ID
+            LEFT JOIN Peliculas P ON R.idPelicula = P.ID
+            WHERE R.idCliente = ? AND R.Fecha_devolucion IS NOT NULL 
+            ORDER BY R.Fecha_devolucion DESC";
     $consulta = $conexion->prepare($sql);
-    $consulta->bind_param("s", $usuario);
+    $consulta->bind_param("i", $idCliente);
     $consulta->execute();
     $reservas_historico = $consulta->get_result();
 ?>
@@ -65,13 +96,20 @@
         
         <?php if($reservas_activas->num_rows > 0): ?>
             <?php while($reserva = $reservas_activas->fetch_assoc()): ?>
+                <?php 
+                    $titulo = ($reserva['tipo'] == 'libro') ? $reserva['TituloLibro'] : $reserva['TituloPelicula'];
+                    $id_reserva = $reserva['idCliente'] . '-' . ($reserva['idLibro'] ?? $reserva['idPelicula']) . '-' . $reserva['tipo'];
+                ?>
                 <tr>
-                    <td><?= $reserva['titulo'] ?></td>
+                    <td><?= $titulo ?></td>
                     <td><?= ucfirst($reserva['tipo']) ?></td>
-                    <td><?= date('d/m/Y H:i', strtotime($reserva['fecha_reserva'])) ?></td>
+                    <td><?= date('d/m/Y H:i', strtotime($reserva['Fecha_reserva'])) ?></td>
                     <td>
                         <form method="post" action="devolver.php" style="display: inline;">
-                            <input type="hidden" name="id_reserva" value="<?= $reserva['id'] ?>">
+                            <input type="hidden" name="idCliente" value="<?= $reserva['idCliente'] ?>">
+                            <input type="hidden" name="idLibro" value="<?= $reserva['idLibro'] ?>">
+                            <input type="hidden" name="idPelicula" value="<?= $reserva['idPelicula'] ?>">
+                            <input type="hidden" name="tipo" value="<?= $reserva['tipo'] ?>">
                             <button type="submit" style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
                                 Devolver
                             </button>
@@ -97,11 +135,14 @@
         
         <?php if($reservas_historico->num_rows > 0): ?>
             <?php while($reserva = $reservas_historico->fetch_assoc()): ?>
+                <?php 
+                    $titulo = ($reserva['tipo'] == 'libro') ? $reserva['TituloLibro'] : $reserva['TituloPelicula'];
+                ?>
                 <tr>
-                    <td><?= $reserva['titulo'] ?></td>
+                    <td><?= $titulo ?></td>
                     <td><?= ucfirst($reserva['tipo']) ?></td>
-                    <td><?= date('d/m/Y H:i', strtotime($reserva['fecha_reserva'])) ?></td>
-                    <td><?= date('d/m/Y H:i', strtotime($reserva['fecha_devolucion'])) ?></td>
+                    <td><?= date('d/m/Y H:i', strtotime($reserva['Fecha_reserva'])) ?></td>
+                    <td><?= date('d/m/Y H:i', strtotime($reserva['Fecha_devolucion'])) ?></td>
                 </tr>
             <?php endwhile; ?>
         <?php else: ?>

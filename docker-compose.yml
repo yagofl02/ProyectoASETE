@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - "C:/Users/yago/Desktop/ProyectoASETE:/var/www/html"
+      - "C:/Users/yagol/Desktop/ProyectoASETE:/var/www/html"
     depends_on:
       - bbdd
 

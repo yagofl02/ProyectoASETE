@@ -45,43 +45,50 @@ function cogerPeliculasBD($filtros = []) {
 
     $peliculas = [];
     while ($fila = $resultado->fetch_assoc()) {
-
-        $adaptacionId = $fila['Adaptacion_Id'] ?? null;
-        switch (strtolower($fila['Tipo_adaptacion'])) {
-            case 'serie':
-                $peliculas[] = new Serie(
-                    $fila['Titulo'],
-                    $fila['Año_estreno'],
-                    $fila['Director'],
-                    $fila['Actores'],
-                    $fila['Genero'],
-                    $adaptacionId
-                );
-                break;
-            case 'corto':
-                $peliculas[] = new Corto(
-                    $fila['Titulo'],
-                    $fila['Año_estreno'],
-                    $fila['Director'],
-                    $fila['Actores'],
-                    $fila['Genero'],
-                    $fila['Adaptacion_Id']
-                );
-                break;
-            default:
-                $peliculas[] = new Pelicula(
-                    $fila['Titulo'],
-                    $fila['Año_estreno'],
-                    $fila['Director'],
-                    $fila['Actores'],
-                    $fila['Genero']
-                );
-                break;
+        $tipoAdaptacion = strtolower($fila['Tipo_adaptacion']);
+        
+        if ($tipoAdaptacion == 'serie') {
+            $n_temporadas = $fila['Adaptacion_id'] ?? 1;
+            $pelicula = new Serie(
+                $fila['Titulo'],
+                $fila['Año_estreno'],
+                $fila['Director'],
+                $fila['Actores'],
+                $fila['Genero'],
+                $n_temporadas
+            );
+            $pelicula->ID = $fila['ID'];
+            $pelicula->n_temporadas = $n_temporadas;
+            $peliculas[] = $pelicula;
+        }
+        elseif ($tipoAdaptacion == 'corto') {
+            $duracion = $fila['Adaptacion_id'] ?? 15;
+            $pelicula = new Corto(
+                $fila['Titulo'],
+                $fila['Año_estreno'],
+                $fila['Director'],
+                $fila['Actores'],
+                $fila['Genero'],
+                $duracion
+            );
+            $pelicula->ID = $fila['ID'];
+            $pelicula->duracion = $duracion;
+            $peliculas[] = $pelicula;
+        }
+        else {
+            $pelicula = new Pelicula(
+                $fila['Titulo'],
+                $fila['Año_estreno'],
+                $fila['Director'],
+                $fila['Actores'],
+                $fila['Genero']
+            );
+            $pelicula->ID = $fila['ID'];
+            $peliculas[] = $pelicula;
         }
     }
 
     $stmt->close();
     return $peliculas;
 }
-
 ?>

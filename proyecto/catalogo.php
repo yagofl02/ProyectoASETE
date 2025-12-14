@@ -1,35 +1,27 @@
 <?php
-
     session_start();
-
     require "internacionalizacion.php";
 
-    //Si no hay usuario logueado (el que sea, nos da igual con que sea uno), lo redirijo al login
     if(!isset($_SESSION["usuario"])){
         header("Location: login.php");
         exit;
     }
 
-    //Conectar a la base de datos para verificar disponibilidad
     require "conexion.php";
 
-    //Inicializamos los filtros
     $genero = "";
     $año = "";
     $director = "";
-    //Capturar filtros enviados por GET
+    
     if ($_SERVER["REQUEST_METHOD"] == "GET") {
-        //Es el operador de fusión de null en PHP (desde la versión 7).
         $genero = $_GET["genero"] ?? "";
         $año = $_GET["año"] ?? "";
         $director = $_GET["director"] ?? "";
 
-        //Guardar en sesión para que persistan
         $_SESSION["genero"] = $genero;
         $_SESSION["año"] = $año;
         $_SESSION["director"] = $director;
     } else {
-        //Si no hay GET, tomar los filtros almacenados en sesión
         $genero = $_SESSION["genero"] ?? "";
         $año = $_SESSION["año"] ?? "";
         $director = $_SESSION["director"] ?? "";
@@ -38,19 +30,17 @@
     require_once "gestion_peliculas.php";
 
     $filtros = [
-    'genero'   => $genero,
-    'anio'     => $año,
-    'director' => $director
-];
+        'genero'   => $genero,
+        'anio'     => $año,
+        'director' => $director
+    ];
 
-    // Obtenemos las películas filtradas desde la BD
     $peliculas = cogerPeliculasBD($filtros);
 
-    // Función para verificar si una película está reservada
-    function estaReservada($titulo, $conexion) {
-        $sql = "SELECT * FROM reservas WHERE titulo = ? AND tipo = 'pelicula' AND fecha_devolucion IS NULL";
+    function estaReservada($idPelicula, $conexion) {
+        $sql = "SELECT * FROM Reservas WHERE idPelicula = ? AND Fecha_devolucion IS NULL";
         $consulta = $conexion->prepare($sql);
-        $consulta->bind_param("s", $titulo);
+        $consulta->bind_param("i", $idPelicula);
         $consulta->execute();
         $resultado = $consulta->get_result();
         return $resultado->num_rows > 0;
@@ -94,37 +84,47 @@
                 <th><?= $traducciones["director"] ?></th>
                 <th><?= $traducciones["actors"] ?></th>
                 <th><?= $traducciones["genre"] ?></th>
-                <th><?= $traducciones["seassons"] ?></th>
-                <th><?= $traducciones["duration"] ?></th>
+                <th>Tipo</th>
                 <th>Disponibilidad</th>
                 <th>Acción</th>
             </tr>
 
+            <?php $contador_peliculas = 0; ?>
             <?php foreach ($peliculas as $pelicula): ?>
-                <?php if(
-                         ($pelicula->año == $año || $año == "") && 
-                         ($pelicula->genero == $genero || $genero == "") && 
-                         (stripos($pelicula->director, $director) != false || $director == "")
-                        ): ?>
+                <?php 
+                $cumpleFiltro = ($pelicula->año == $año || $año == "") && 
+                               ($pelicula->genero == $genero || $genero == "") && 
+                               (stripos($pelicula->director, $director) !== false || $director == "");
+                
+                if($cumpleFiltro): 
+                ?>
                     
-                    <?php $reservada = estaReservada($pelicula->titulo, $conexion); ?>
+                    <?php 
+                    $idPelicula = $pelicula->ID ?? $pelicula->id ?? null;
+                    
+                    if ($idPelicula !== null) {
+                        $reservada = estaReservada($idPelicula, $conexion);
+                    } else {
+                        $reservada = false;
+                    }
+                    ?>
 
                     <tr>
-                        
-                        <td><?= $pelicula->titulo ?></td>
-                        <td><?= $pelicula->año ?></td>
-                        <td><?= $pelicula->director ?></td>
-                        <td><?= $pelicula->actores ?></td>
-                        <td><?= $pelicula->genero ?></td>
+                        <td><?= htmlspecialchars($pelicula->titulo ?? '') ?></td>
+                        <td><?= htmlspecialchars($pelicula->año ?? '') ?></td>
+                        <td><?= htmlspecialchars($pelicula->director ?? '') ?></td>
+                        <td><?= htmlspecialchars($pelicula->actores ?? '') ?></td>
+                        <td><?= htmlspecialchars($pelicula->genero ?? '') ?></td>
                         <td>
-                            <?php if($pelicula instanceof Serie): ?>
-                            <?= $pelicula->n_temporadas ?>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <?php if($pelicula instanceof Corto): ?>
-                            <?= $pelicula->duracion ?>
-                            <?php endif; ?>
+                            <?php 
+                            if($pelicula instanceof Serie) {
+                                echo 'Serie: ' . htmlspecialchars($pelicula->n_temporadas ?? '1') . ' temp';
+                            } elseif($pelicula instanceof Corto) {
+                                echo 'Corto: ' . htmlspecialchars($pelicula->duracion ?? '15') . ' min';
+                            } else {
+                                echo 'Película';
+                            }
+                            ?>
                         </td>
                         <td>
                             <?php if($reservada): ?>
@@ -134,34 +134,32 @@
                             <?php endif; ?>
                         </td>
                         <td>
-                            <?php if(!$reservada): ?>
+                            <?php if(!$reservada && $idPelicula): ?>
                                 <form method="post" action="reservar.php" style="display: inline;">
-                                    <input type="hidden" name="titulo" value="<?= $pelicula->titulo ?>">
+                                    <input type="hidden" name="id_producto" value="<?= $idPelicula ?>">
                                     <input type="hidden" name="tipo" value="pelicula">
                                     <button type="submit" style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
                                         Reservar
                                     </button>
                                 </form>
-                            <?php else: ?>
+                            <?php elseif($reservada): ?>
                                 <span style="color: #999;">Reservado</span>
+                            <?php else: ?>
+                                <span style="color: #999;">No disponible</span>
                             <?php endif; ?>
                         </td>
                     </tr>
 
-                    <?php $contador_peliculas = ($contador_peliculas ?? 0) + 1; ?>
+                    <?php $contador_peliculas++; ?>
 
                 <?php endif; ?>
-                <?php //echo $pelicula->mostrarPelicula(); ?>
-                <?php //echo $pelicula->toJSON(); ?>
 
             <?php endforeach; ?>
 
-            <?php if(empty($contador_peliculas)): ?>
-
+            <?php if($contador_peliculas == 0): ?>
                 <tr>
-                    <td colspan="9">No se ha encontrado ninguna película que coincida con la selección</td>
+                    <td colspan="8">No se ha encontrado ninguna película que coincida con la selección</td>
                 </tr>
-
             <?php endif; ?>
 
         </table>
