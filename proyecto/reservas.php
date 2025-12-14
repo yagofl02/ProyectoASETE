@@ -68,7 +68,7 @@
     
     <h1>Mis Reservas</h1>
     
-    <a href="catalogo.php">Ver Películas</a>
+    <a href="catalogo_peliculas.php">Ver Películas</a>
     <a href="catalogo_libros.php">Ver Libros</a>
     
     <p>Usuario: <?php echo $_SESSION['usuario']; ?> | <a href="logout.php">Cerrar Sesión</a></p>

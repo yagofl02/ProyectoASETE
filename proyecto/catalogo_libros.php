@@ -9,6 +9,7 @@
 
     require "conexion.php";
 
+    //variables para los filtros
     $genero = "";
     $año = "";
     $autor = "";
@@ -59,7 +60,7 @@
 
         <?php include "caja-idiomas.html"; ?>
         <h1>Catálogo de Libros</h1>
-        <a href="catalogo.php">Ver Películas</a>
+        <a href="catalogo_peliculas.php">Ver Películas</a>
         <a href="reservas.php" style="color: orange;">Mis Reservas</a>
         <p><?= $traducciones["user"] ?>: <?php echo $_SESSION['usuario']; ?> | <a href="logout.php"><?= $traducciones["logout"] ?></p>
 

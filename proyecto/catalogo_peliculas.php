@@ -58,9 +58,8 @@
     <body>
 
         <?php include "caja-idiomas.html"; ?>
-        <h1><?= $traducciones["catalog"] ?> de Películas</h1>
+        <h1><?= $traducciones["catalog"] ?></h1>
         <a href="filtro.php"><?= $traducciones["filter"] ?></a>
-        <a href="agregar_peliculas.php" style="color: green;"><?= $traducciones["new_film"] ?></a>
         <a href="catalogo_libros.php" style="color: purple;">Ver Libros</a>
         <a href="reservas.php" style="color: orange;">Mis Reservas</a>
         <p><?= $traducciones["user"] ?>: <?php echo $_SESSION['usuario']; ?> | <a href="logout.php"><?= $traducciones["logout"] ?></p>

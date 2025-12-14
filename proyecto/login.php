@@ -37,7 +37,7 @@
             if ($resultado->num_rows === 1) {
                 // Login correcto
                 $_SESSION["usuario"] = $usuario;
-                header("Location: catalogo.php");
+                header("Location: catalogo_peliculas.php");
                 exit;
             } else {
                 // Error de login

@@ -8,40 +8,41 @@ function cogerPeliculasBD($filtros = []) {
     $conexion->set_charset("utf8mb4");
 
     $sql = "SELECT * FROM Peliculas WHERE 1=1";
-    $params = [];
+    $parametros = [];
     $tipos = "";
 
     if (!empty($filtros['titulo'])) {
         $sql .= " AND Titulo LIKE ?";
-        $params[] = "%".$filtros['titulo']."%";
+        $parametros[] = "%".$filtros['titulo']."%";
         $tipos .= "s";
     }
 
     if (!empty($filtros['genero'])) {
         $sql .= " AND Genero = ?";
-        $params[] = $filtros['genero'];
+        $parametros[] = $filtros['genero'];
         $tipos .= "s";
     }
 
     if (!empty($filtros['director'])) {
         $sql .= " AND Director LIKE ?";
-        $params[] = "%".$filtros['director']."%";
+        $parametros[] = "%".$filtros['director']."%";
         $tipos .= "s";
     }
 
     if (!empty($filtros['anio'])) {
         $sql .= " AND `Año_estreno` = ?";
-        $params[] = (int)$filtros['anio'];
+        $parametros[] = (int)$filtros['anio'];
         $tipos .= "i";
     }
 
-    $stmt = $conexion->prepare($sql);
-    if (!$stmt) die("Error en la preparación: " . $conexion->error);
+    $consulta = $conexion->prepare($sql);
+    
 
-    if ($params) $stmt->bind_param($tipos, ...$params);
-
-    $stmt->execute();
-    $resultado = $stmt->get_result();
+    if ($parametros){
+        $consulta->bind_param($tipos, ...$parametros);
+    }
+    $consulta->execute();
+    $resultado = $consulta->get_result();
 
     $peliculas = [];
     while ($fila = $resultado->fetch_assoc()) {
@@ -88,7 +89,7 @@ function cogerPeliculasBD($filtros = []) {
         }
     }
 
-    $stmt->close();
+    $consulta->close();
     return $peliculas;
 }
 ?>
