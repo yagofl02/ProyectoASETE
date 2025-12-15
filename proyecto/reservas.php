@@ -66,12 +66,12 @@
 <body>
     <?php include "caja-idiomas.html"; ?>
     
-    <h1>Mis Reservas</h1>
+    <h1><?= $traducciones["reservas"] ?></h1>
     
-    <a href="catalogo_peliculas.php">Ver Películas</a>
-    <a href="catalogo_libros.php">Ver Libros</a>
+    <a href="catalogo_peliculas.php"><?= $traducciones["peliculas"] ?></a>
+    <a href="catalogo_libros.php"><?= $traducciones["libros"] ?></a>
     
-    <p>Usuario: <?php echo $_SESSION['usuario']; ?> | <a href="logout.php">Cerrar Sesión</a></p>
+    <p><?= $traducciones["user"] ?>: <?php echo $_SESSION['usuario']; ?> | <a href="logout.php"><?= $traducciones["logout"] ?></a></p>
 
     <?php if(isset($_SESSION["mensaje_exito"])): ?>
         <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
@@ -85,13 +85,13 @@
         </div>
     <?php endif; ?>
 
-    <h2>Reservas Activas</h2>
+    <h2><?= $traducciones["activas"] ?></h2>
     <table>
         <tr>
-            <th>Título</th>
-            <th>Tipo</th>
-            <th>Fecha Reserva</th>
-            <th>Acción</th>
+            <th><?= $traducciones["title"] ?></th>
+            <th><?= $traducciones["tipo"] ?></th>
+            <th><?= $traducciones["fechar"] ?></th>
+            <th><?= $traducciones["accion"] ?></th>
         </tr>
         
         <?php if($reservas_activas->num_rows > 0): ?>
@@ -119,18 +119,18 @@
             <?php endwhile; ?>
         <?php else: ?>
             <tr>
-                <td colspan="4">No tienes reservas activas</td>
+                <td colspan="4"><?= $traducciones["reservasa"] ?></td>
             </tr>
         <?php endif; ?>
     </table>
 
-    <h2 style="margin-top: 30px;">Historial de Reservas</h2>
+    <h2 style="margin-top: 30px;"><?= $traducciones["reservasi"] ?></h2>
     <table>
         <tr>
-            <th>Título</th>
-            <th>Tipo</th>
-            <th>Fecha Reserva</th>
-            <th>Fecha Devolución</th>
+            <th><?= $traducciones["title"] ?></th>
+            <th><?= $traducciones["tipo"] ?></th>
+            <th><?= $traducciones["fechar"] ?></th>
+            <th><?= $traducciones["accion"] ?></th>
         </tr>
         
         <?php if($reservas_historico->num_rows > 0): ?>

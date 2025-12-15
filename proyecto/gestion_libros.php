@@ -40,13 +40,13 @@ function cogerLibrosBD($filtros = []) {
 
     $sql .= " ORDER BY L.Titulo";
 
-    $stmt = $conexion->prepare($sql);
-    if (!$stmt) die("Error en la preparación: " . $conexion->error);
+    $consulta = $conexion->prepare($sql);
+    if (!$consulta) die("Error en la preparación: " . $conexion->error);
 
-    if ($params) $stmt->bind_param($tipos, ...$params);
+    if ($params) $consulta->bind_param($tipos, ...$params);
 
-    $stmt->execute();
-    $resultado = $stmt->get_result();
+    $consulta->execute();
+    $resultado = $consulta->get_result();
 
     $libros = [];
     while ($fila = $resultado->fetch_assoc()) {
@@ -64,7 +64,7 @@ function cogerLibrosBD($filtros = []) {
         );
     }
 
-    $stmt->close();
+    $consulta->close();
     return $libros;
 }
 ?>

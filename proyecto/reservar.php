@@ -126,7 +126,7 @@
     if($tipo == "libro") {
         header("Location: catalogo_libros.php");
     } else {
-        header("Location: catalogo.php");
+        header("Location: catalogo_peliculas.php");
     }
     exit;
 ?>

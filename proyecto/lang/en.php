@@ -17,6 +17,25 @@
 		"duration" => "Duration",
 		"save_film" => "Save film",
 		"add_new_film" => "Add new film",
-		"back_to_catalog" => "Back to catalog"
+		"back_to_catalog" => "Back to catalog",
+		"libros" => "Book catalog",
+		"peliculas" => "Watch films",
+		"reservas" => "My reservations",
+		"author" => "Author",
+		"editorial" => "Publishing house",
+		"paginas" => "Pages",
+		"disponibilidad" => "Disponibility",
+		"accion" => "Action",
+		"no disponible" => "Not available",
+		"disponible" => "Available",
+		"reservar" => "Reserve",
+		"reservado" => "Reserved",
+		"libros" => "Watch books",
+		"tipo" => "Type",
+		"activas" => "Active reserves",
+		"fechar" => "Reservation date",
+		"reservasa" => "You dont have active reservations",
+		"reservasi" => "Booking history",
+		"fechad" => "Return date"
 	];
 ?>

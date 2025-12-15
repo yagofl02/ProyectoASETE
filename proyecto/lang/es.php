@@ -17,6 +17,25 @@
 		"duration" => "Duración",
 		"save_film" => "Guardar película",
 		"add_new_film" => "Agregar nueva película",
-		"back_to_catalog" => "Volver al catálogo"
+		"back_to_catalog" => "Volver al catálogo",
+		"libros" => "Catalogo de libros",
+		"peliculas" => "Ver peliculas",
+		"reservas" => "Mis reservas",
+		"author" => "Autor",
+		"editorial" => "Editorial",
+		"paginas" => "Paginas",
+		"disponibilidad" => "Disponibilidad",
+		"accion" => "Accion",
+		"no disponible" => "No disponible",
+		"disponible" => "Disponible",
+		"reservar" => "Reservar",
+		"reservado" => "Reservado",
+		"libros" => "Ver libros",
+		"tipo" => "Tipo",
+		"activas" => "Reservas activas",
+		"fechar" => "Fecha de reserva",
+		"reservasa" => "No tienes reservas activas",
+		"reservasi" => "Historial de reservas",
+		"fechad" => "Fecha de devolucion"
 	];
 ?>

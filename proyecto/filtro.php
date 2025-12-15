@@ -25,7 +25,7 @@
 
   <h1>Filtrar películas</h1>
 
-  <form method="get" action="catalogo.php">
+  <form method="get" action="catalogo_peliculas.php">
     <label for="genero"><?= $traducciones["genre"] ?>:</label>
     <select name="genero" id="genero">
       <option value="" <?= $genero == "" ? 'selected' : "" ?>>Todos</option>

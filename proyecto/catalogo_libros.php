@@ -59,9 +59,9 @@
     <body>
 
         <?php include "caja-idiomas.html"; ?>
-        <h1>Catálogo de Libros</h1>
-        <a href="catalogo_peliculas.php">Ver Películas</a>
-        <a href="reservas.php" style="color: orange;">Mis Reservas</a>
+        <h1><?= $traducciones["libros"] ?></h1>
+        <a href="catalogo_peliculas.php"><?= $traducciones["peliculas"] ?></a>
+        <a href="reservas.php" style="color: orange;"><?= $traducciones["reservas"] ?></a>
         <p><?= $traducciones["user"] ?>: <?php echo $_SESSION['usuario']; ?> | <a href="logout.php"><?= $traducciones["logout"] ?></p>
 
         <?php if(isset($_SESSION["mensaje_exito"])): ?>
@@ -78,14 +78,14 @@
 
         <table>
             <tr>
-                <th>Título</th>
-                <th>Autor</th>
-                <th>Año</th>
-                <th>Género</th>
-                <th>Editorial</th>
-                <th>Páginas</th>
-                <th>Disponibilidad</th>
-                <th>Acción</th>
+                <th><?= $traducciones["title"] ?></th>
+                <th><?= $traducciones["author"] ?></th>
+                <th><?= $traducciones["year"] ?></th>
+                <th><?= $traducciones["genre"] ?></th>
+                <th><?= $traducciones["editorial"] ?></th>
+                <th><?= $traducciones["paginas"] ?></th>
+                <th><?= $traducciones["disponibilidad"] ?></th>
+                <th><?= $traducciones["accion"] ?></th>
             </tr>
 
             <?php $contador_libros = 0; ?>
@@ -120,9 +120,9 @@
                         <td><?= htmlspecialchars($libro->paginas ?? '') ?></td>
                         <td>
                             <?php if($reservado): ?>
-                                <span style="color: red; font-weight: bold;">No Disponible</span>
+                                <span style="color: red; font-weight: bold;"><?= $traducciones["no disponible"] ?></span>
                             <?php else: ?>
-                                <span style="color: green; font-weight: bold;">Disponible</span>
+                                <span style="color: green; font-weight: bold;"><?= $traducciones["disponible"] ?></span>
                             <?php endif; ?>
                         </td>
                         <td>
@@ -131,13 +131,13 @@
                                     <input type="hidden" name="id_producto" value="<?= $idLibro ?>">
                                     <input type="hidden" name="tipo" value="libro">
                                     <button type="submit" style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
-                                        Reservar
+                                        <?= $traducciones["reservar"] ?>
                                     </button>
                                 </form>
                             <?php elseif($reservado): ?>
-                                <span style="color: #999;">Reservado</span>
+                                <span style="color: #999;"><?= $traducciones["reservado"] ?></span>
                             <?php else: ?>
-                                <span style="color: #999;">No disponible</span>
+                                <span style="color: #999;"><?= $traducciones["no disponible"] ?></span>
                             <?php endif; ?>
                         </td>
                     </tr>
